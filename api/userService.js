@@ -1,4 +1,4 @@
-const connection = require('./../config/database')
+const mongodb = require('./../config/database')
 
 // POST /api/user
 function addUser(req, res) {
@@ -12,12 +12,22 @@ function addUser(req, res) {
   console.log(newUser);
   console.log((new Date()).getTime());
 
+
+  mongodb.collection("users").insertOne( newUser, function(error, result) {
+      if (error) {
+        response.status(500).send(error);
+      } else {
+        response.send(result);
+      }
+    });
+    /*
   connection.insert({"user": newUser}, function(err, body, header) {
     if (err) {
       return console.log('[mydb.insert] ', err.message);
     }
     res.send("Hello " + newUser.name + "! I added you to the database."+(new Date()).getTime() );
   });
+  */
 
 }
 
