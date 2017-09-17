@@ -1,0 +1,29 @@
+{
+  "services": {
+
+    "cloudantNoSQLDB": [
+      {
+        "credentials": {
+          "username": "eeaa251b-3624-49e0-b597-d32d676d80e9-bluemix",
+          "password": "b5b582e795e20f065c584f1e3968fd97e36a9c50e67f0818d513480db3b2c82b",
+          "host": "eeaa251b-3624-49e0-b597-d32d676d80e9-bluemix.cloudant.com",
+          "port": 443,
+          "url": "https://eeaa251b-3624-49e0-b597-d32d676d80e9-bluemix:b5b582e795e20f065c584f1e3968fd97e36a9c50e67f0818d513480db3b2c82b@eeaa251b-3624-49e0-b597-d32d676d80e9-bluemix.cloudant.com"
+        },
+        "syslog_drain_url": null,
+        "volume_mounts": [],
+        "label": "cloudantNoSQLDB",
+        "provider": null,
+        "plan": "Lite",
+        "name": "skyfall-blog-dev-NoSQL-DB",
+        "tags": [
+          "data_management",
+          "ibm_created",
+          "lite",
+          "ibm_dedicated_public"
+        ]
+      }
+    ]
+  }
+
+}

@@ -1,0 +1,7 @@
+---
+applications:
+ - name: skyfall-blog-dev
+   random-route: true
+   instances: 1
+   memory: 256M
+   host: skyfall-blog-dev
