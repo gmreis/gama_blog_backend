@@ -11,6 +11,8 @@ function addUser(req, res) {
 
   console.log(newUser);
   console.log((new Date()).getTime());
+  response.send(newUser);
+  return;
 
 
   mongodb.collection("users").insertOne( newUser, function(error, result) {
