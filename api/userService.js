@@ -1,4 +1,5 @@
 const connection = require('./../config/database')
+var moment = require('moment-timezone');
 
 // POST /api/user
 function addUser(req, res) {
@@ -26,14 +27,9 @@ function addUser(req, res) {
     }
 
     var datatime = new Date();
-    var data = datatime.getDate();
-    data += "/" + datatime.getMonth();
-    data += "/" + datatime.getFullYear();
-    data += " " + datatime.getHours();
-    data += ":" + datatime.getMinutes();
-    data += ":" + datatime.getSeconds();
+    var data = moment.tz(datatime, "America/Sao_Paulo").format();
 
-    res.send("Hello " + newUser.name + "! I added you to the database. " + data );
+    res.send("Hello " + newUser.name + "! I added you to the database. Hora servidor: " + datatime.toLocaleTimeString() + " - Hora Sao Paulo:" + data );
   });
 
 }
