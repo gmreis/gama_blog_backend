@@ -2,8 +2,6 @@
 applications:
  - name: skyfall-blog-dev
    random-route: true
-   instances: 1
+   instances: 2
    memory: 256M
    host: skyfall-blog-dev
-   services:
-    - MongoDB-skyfall-blog

@@ -8,13 +8,10 @@
   },
   "dependencies": {
     "body-parser": "^1.17.x",
-    "cf-deployment-tracker-client": "*",
     "cfenv": "^1.0.x",
-    "commander": "^2.6.0",
     "cloudant": "^1.7.x",
     "dotenv": "^4.0.0",
-    "express": "^4.15.x",
-    "mongodb": "^2.2.9"
+    "express": "^4.15.x"
   },"devDependencies": {
     "nodemon": "^1.11.0"
   },

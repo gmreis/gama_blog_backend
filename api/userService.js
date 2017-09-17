@@ -1,4 +1,4 @@
-const mongodb = require('./../config/database')
+const connection = require('./../config/database')
 
 // POST /api/user
 function addUser(req, res) {
@@ -33,9 +33,8 @@ function addUser(req, res) {
     data += ":" + datatime.getMinutes();
     data += ":" + datatime.getSeconds();
 
-    res.send("Hello " + newUser.name + "! I added you to the database."+(new Date()).getTime() );
+    res.send("Hello " + newUser.name + "! I added you to the database. " + data );
   });
-  */
 
 }
 
