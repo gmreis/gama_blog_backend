@@ -5,3 +5,5 @@ applications:
    instances: 1
    memory: 256M
    host: skyfall-blog-dev
+   services:
+    - MongoDB-skyfall-blog
