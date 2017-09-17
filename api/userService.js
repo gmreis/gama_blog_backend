@@ -10,11 +10,8 @@ function addUser(req, res) {
   };
 
   console.log(newUser);
-  console.log((new Date()).getTime());
-  response.send(newUser);
-  return;
 
-
+/*
   mongodb.collection("users").insertOne( newUser, function(error, result) {
       if (error) {
         response.status(500).send(error);
@@ -22,11 +19,20 @@ function addUser(req, res) {
         response.send(result);
       }
     });
-    /*
+  */
   connection.insert({"user": newUser}, function(err, body, header) {
     if (err) {
       return console.log('[mydb.insert] ', err.message);
     }
+
+    var datatime = new Date();
+    var data = datatime.getDate();
+    data += "/" + datatime.getMonth();
+    data += "/" + datatime.getFullYear();
+    data += " " + datatime.getHours();
+    data += ":" + datatime.getMinutes();
+    data += ":" + datatime.getSeconds();
+
     res.send("Hello " + newUser.name + "! I added you to the database."+(new Date()).getTime() );
   });
   */
