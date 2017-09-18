@@ -174,7 +174,7 @@ function findAllPosts(req, res) {
           "$gte": 0
         }
       },
-      "sort": [{ "time": "asc" }],
+      "sort": [{ "time": "desc" }],
       "limit": limit,
       "skip": ((page-1)*limit)
     };
