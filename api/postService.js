@@ -10,7 +10,9 @@ function addPost(req, res) {
   var newPost = {
     "title": req.body.title,
     "description": req.body.description,
+    "keys": req.body.keys,
     "author": req.body.author,
+    "image": req.body.image,
     "date_create": date_create,
     "time": date.getTime()
   };
@@ -29,6 +31,81 @@ function addPost(req, res) {
   });
 
 }
+
+// GET /api/posts/find/:id
+function findPostById(req, res) {
+  const postId = req.params.id;
+
+  connection.get(postId, function(err, data) {
+    if (err) {
+      res.status(400).end();
+      return console.log('[posts.get] ', err.message);
+    }
+
+    var post = {
+      "_id": data._id,
+      "title": data.title,
+      "description": data.description,
+      "keys": data.keys,
+      "author": data.author,
+      "image": data.image,
+      "date_create": data.date_create
+    };
+
+    res.setHeader('Content-Type', 'application/json');
+    res.status(201).end(JSON.stringify(post));
+  });
+
+}
+
+// GET /api/posts
+// GET /api/posts/:page
+function findAllPosts(req, res) {
+
+  const limit = 10;
+
+  var page = parseInt(req.params.page) || 1;
+  page = page<1?1:page;
+
+  const query = {
+      "selector": {
+        "time": {
+          "$gte": 0
+        }
+      },
+      "sort": [{ "time": "desc" }],
+      "limit": limit,
+      "skip": ((page-1)*limit)
+    };
+
+  connection.find(query, function(err, data) {
+    if (err) {
+      res.status(400).end();
+      return console.log('[posts.find] ', err.message);
+    }
+
+    var posts = [];
+    for(var i=0; i<data.docs.length; i++) {
+      var post = {
+        "_id": data.docs[i]._id,
+        "title": data.docs[i].title,
+        "description": data.docs[i].description.substring(0, 100),
+        "keys": data.docs[i].keys,
+        "author": data.docs[i].author,
+        "image": data.docs[i].image,
+        "date_create": data.docs[i].date_create,
+        "time": data.docs[i].time
+      };
+
+      posts.push(post);
+    }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).end(JSON.stringify(posts));
+  });
+
+}
+
 
 
 var fs = require('fs');
@@ -135,74 +212,5 @@ function addImage(req, res) {
 */
 }
 
-// GET /api/posts/find/:id
-function findPostById(req, res) {
-  const postId = req.params.id;
-
-  connection.get(postId, function(err, data) {
-    if (err) {
-      res.status(400).end();
-      return console.log('[posts.get] ', err.message);
-    }
-
-    var post = {
-      "_id": data._id,
-      "title": data.title,
-      "description": data.description,
-      "author": data.author,
-      "date_create": data.date_create
-    };
-
-    res.setHeader('Content-Type', 'application/json');
-    res.status(201).end(JSON.stringify(post));
-  });
-
-}
-
-// GET /api/posts
-// GET /api/posts/:page
-function findAllPosts(req, res) {
-
-  const limit = 10;
-
-  var page = parseInt(req.params.page) || 1;
-  page = page<1?1:page;
-
-  const query = {
-      "selector": {
-        "time": {
-          "$gte": 0
-        }
-      },
-      "sort": [{ "time": "desc" }],
-      "limit": limit,
-      "skip": ((page-1)*limit)
-    };
-
-  connection.find(query, function(err, data) {
-    if (err) {
-      res.status(400).end();
-      return console.log('[posts.find] ', err.message);
-    }
-
-    var posts = [];
-    for(var i=0; i<data.docs.length; i++) {
-      var post = {
-        "_id": data.docs[i]._id,
-        "title": data.docs[i].title,
-        "description": data.docs[i].description.substring(0, 100),
-        "author": data.docs[i].author,
-        "date_create": data.docs[i].date_create,
-        "time": data.docs[i].time
-      };
-
-      posts.push(post);
-    }
-
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).end(JSON.stringify(posts));
-  });
-
-}
 
 module.exports = { addPost, findPostById, findAllPosts, addImage }

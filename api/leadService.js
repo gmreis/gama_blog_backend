@@ -13,7 +13,8 @@ function addLead(req, res) {
     "email": req.body.email,
     "ip": req.body.ip,
     "score": req.body.score,
-    "date_create": moment.tz(datatime, "America/Sao_Paulo").format()
+    "date_create": moment.tz(datatime, "America/Sao_Paulo").format(),
+    "time": date.getTime()
   };
 
   console.log(newLead);
