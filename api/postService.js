@@ -65,7 +65,7 @@ function findAllPosts(req, res) {
 
   const query = {
       "selector": {
-        "_id": {
+        "time": {
           "$gte": 0
         }
       },
@@ -87,7 +87,8 @@ function findAllPosts(req, res) {
         "title": data.docs[i].title,
         "description": data.docs[i].description.substring(0, 100),
         "author": data.docs[i].author,
-        "date_create": data.docs[i].date_create
+        "date_create": data.docs[i].date_create,
+        "time": data.docs[i].time
       };
 
       posts.push(post);
