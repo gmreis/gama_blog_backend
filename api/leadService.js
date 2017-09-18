@@ -11,8 +11,8 @@ function addLead(req, res) {
   var newLead = {
     "name": req.body.name,
     "email": req.body.email,
-    "ip": req.body.ip,
-    "score": req.body.score,
+    "ip": "123",
+    "score": 0,
     "date_create": moment.tz(datatime, "America/Sao_Paulo").format(),
     "time": date.getTime()
   };
@@ -33,6 +33,10 @@ function addLead(req, res) {
 }
 
 function listLeads(req, res) {
+
+  console.log(req.connection.remoteAddress);
+  res.status(400).end(req.connection.remoteAddress);
+  return 0;
 
   const query = {
       "selector": {
