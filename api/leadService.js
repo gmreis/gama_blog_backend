@@ -5,14 +5,17 @@ const fs = require('fs');
 // POST /api/Lead
 function addLead(req, res) {
 
-  var datatime = new Date();
-  //var data = moment.tz(datatime, "America/Sao_Paulo").format();
+  const datatime = new Date();
+  const ip = (req.headers['x-forwarded-for'] ||
+     req.connection.remoteAddress ||
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress).split(",")[0];
 
   var newLead = {
     "_id": req.body.email,
     "name": req.body.name,
     "email": req.body.email,
-    "ip": "123",
+    "ip": ip,
     "score": 0,
     "date_create": moment.tz(datatime, "America/Sao_Paulo").format(),
     "time": datatime.getTime()
@@ -35,15 +38,7 @@ function addLead(req, res) {
 
 function listLeads(req, res) {
 
-  var ip = (req.headers['x-forwarded-for'] ||
-     req.connection.remoteAddress ||
-     req.socket.remoteAddress ||
-     req.connection.socket.remoteAddress).split(",")[0];
 
-
-  console.log(ip);
-  res.status(200).end(ip);
-  return 0;
 
   const query = {
       "selector": {
