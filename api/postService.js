@@ -85,7 +85,7 @@ function findAllPosts(req, res) {
       var post = {
         "_id": data.docs[i]._id,
         "title": data.docs[i].title,
-        "description": data.docs[i].description,
+        "description": data.docs[i].description.substring(0,100),
         "author": data.docs[i].author,
         "date_create": data.docs[i].date_create
       };
