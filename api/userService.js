@@ -12,7 +12,7 @@ function addUser(req, res) {
   };
 
   console.log(newUser);
-
+  
   //connection.insert({"user": newUser}, function(err, body, header) {
   connection.insert(newUser, function(err, body, header) {
     if (err) {
@@ -39,7 +39,7 @@ function login(req, res) {
     "pass": req.body.pass
   };
 
-  connection.get("qqq", function(err, data) {
+  connection.get(user.login, function(err, data) {
     console.log("Error:", err);
     console.log("Data:", data);
     // keep a copy of the doc so we know its revision token

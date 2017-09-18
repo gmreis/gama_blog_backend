@@ -30,6 +30,12 @@ if (appEnv.services['cloudantNoSQLDB']) {
 
   // Specify the database we are going to use (connection)...
   connection = cloudant.db.use(dbName);
+
+  var index_login = {name:'login-index', type:'json', index:{fields:['login']}}
+  connection.index(index_login, function(er, response) {
+    if (!er)
+      console.log('Index %s creation result: %s', index_login.name, response.result);
+  });
 }
 
 module.exports = connection
