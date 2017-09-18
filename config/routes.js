@@ -4,7 +4,7 @@ const url = require('url')
 module.exports = function(server) {
 
   server.use(function(req, res, next) {
-    console.log("Olá Mundo...");
+    //console.log("Olá Mundo...");
     next();
   })
 
@@ -15,8 +15,22 @@ module.exports = function(server) {
 
   const userService = require('../api/userService')
 
-  // POST /api/user
-  router.route('/user').post(userService.addUser)
+  // POST /api/users
+  router.route('/users').post(userService.addUser)
+
+  // POST /api/users/login
+  router.route('/users/login').post(userService.login)
+
+  const postService = require('../api/postService')
+
+  // POST /api/posts
+  router.route('/posts').post(postService.addPost)
+
+  // GET /api/posts/find/:id
+  router.route('/posts/find/:id').get(postService.findPostById)
+
+  // GET /api/posts/:page
+  router.route('/posts/:page').get(postService.findAllPosts)
 
 /*
   // GET /urls/:urlId

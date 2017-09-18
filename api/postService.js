@@ -1,28 +1,61 @@
-const connection = require('./../config/database')
+const connection = require('./../config/database_posts')
+const moment = require('moment-timezone');
 
-// POST /api/post
+// POST /api/posts
 function addPost(req, res) {
 
-  var newUser = {
-    "name": req.body.name,
-    "login": req.body.login,
-    "pass": req.body.pass
+  var data = moment.tz(new Date(), "America/Sao_Paulo").format();
+
+  var newPost = {
+    "title": req.body.title,
+    "description": req.body.description,
+    "author": req.body.author,
+    "date_create": data
   };
 
-  console.log(newUser);
-
-  connection.insert(newUser, function(err, body, header) {
+  connection.insert(newPost, function(err, body, header) {
     if (err) {
-      return console.log('[mydb.insert] ', err.message);
+      res.status(400).end();
+      return console.log('[posts.insert] ', err.message);
     }
-    res.send("Hello " + newUser.name + "! I added you to the database.");
+
+    newPost._id = body.id;
+    //console.log(newPost);
+
+    res.setHeader('Content-Type', 'application/json');
+    res.status(201).end(JSON.stringify(newPost));
   });
 
 }
 
-// GET /api/posts/:limit/:page
-function listPost(req, res) {
-  res.send("Hello! I added you to the database.");
+// GET /api/posts/find/:id
+function findPostById(req, res) {
+  const postId = req.params.id;
+
+  connection.get(postId, function(err, data) {
+    if (err) {
+      res.status(400).end();
+      return console.log('[posts.get] ', err.message);
+    }
+
+    var post = {
+      "_id": data._id,
+      "title": data.title,
+      "description": data.description,
+      "author": data.author,
+      "date_create": data.date_create
+    };
+
+    res.setHeader('Content-Type', 'application/json');
+    res.status(201).end(JSON.stringify(post));
+  });
+
 }
 
-module.exports = { addUser, listPost }
+// GET /api/posts/:page
+function findAllPosts(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  res.status(200).end("OK");
+}
+
+module.exports = { addPost, findPostById, findAllPosts }

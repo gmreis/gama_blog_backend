@@ -20,7 +20,7 @@ if (appEnv.services['cloudantNoSQLDB']) {
   var cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 
   //database name
-  var dbName = 'blog';
+  var dbName = 'leads';
 
   // Create a new "mydb" database.
   cloudant.db.create(dbName, function(err, data) {
