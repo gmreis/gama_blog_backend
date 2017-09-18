@@ -62,24 +62,15 @@ module.exports = function(server) {
   router.route('/posts').get(postService.findAllPosts)
   router.route('/posts/:page').get(postService.findAllPosts)
 
-/*
-  // GET /urls/:urlId
-  router.route('/urls/:urlId').get(urlService.redirectUrl)
-  // GET /stats
-  router.route('/stats').get(urlService.stats)
-  // GET /stats/:urlId
-  router.route('/stats/:urlId').get(urlService.statsOneUrl)
-  // DELETE /urls/:urlId
-  router.route('/urls/:urlId').delete(urlService.remove)
+  const leadService = require('../api/leadService')
 
-  const userService = require('../api/user/userService')
-  // POST /users/:userId/urls
-  router.route('/users/:userId/urls').post(userService.addUrl)
-  //GET /users/:userId/stats
-  router.route('/users/:userId/stats').get(userService.stats)
-  //POST /users
-  router.route('/users').post(userService.add)
-  // DELETE /user/:userId
-  router.route('/user/:userId').delete(userService.remove)
-*/
+  // POST /api/leads
+  router.route('/leads').post(leadService.addLead)
+
+  // GET /api/leads
+  router.route('/leads').get(leadService.listLeads)
+
+  // GET /api/leadsCSV
+  router.route('/leadsCSV').get(leadService.listLeadsCSV)
+
 }

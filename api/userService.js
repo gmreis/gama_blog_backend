@@ -12,16 +12,13 @@ function addUser(req, res) {
   };
 
   console.log(newUser);
-  
+
   //connection.insert({"user": newUser}, function(err, body, header) {
   connection.insert(newUser, function(err, body, header) {
     if (err) {
       res.status(400).end();
       return console.log('[mydb.insert] ', err.message);
     }
-
-    var datatime = new Date();
-    var data = moment.tz(datatime, "America/Sao_Paulo").format();
 
     console.log(body);
 
