@@ -35,8 +35,14 @@ function addLead(req, res) {
 
 function listLeads(req, res) {
 
-  console.log(req.connection.remoteAddress);
-  res.status(400).end(req.connection.remoteAddress);
+  var ip = (req.headers['x-forwarded-for'] ||
+     req.connection.remoteAddress ||
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress).split(",")[0];
+
+
+  console.log(ip);
+  res.status(200).end(ip);
   return 0;
 
   const query = {
