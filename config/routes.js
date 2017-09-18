@@ -29,7 +29,9 @@ module.exports = function(server) {
   // GET /api/posts/find/:id
   router.route('/posts/find/:id').get(postService.findPostById)
 
+  // GET /api/posts
   // GET /api/posts/:page
+  router.route('/posts').get(postService.findAllPosts)
   router.route('/posts/:page').get(postService.findAllPosts)
 
 /*
