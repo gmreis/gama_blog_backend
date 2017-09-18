@@ -58,7 +58,7 @@ function findPostById(req, res) {
 // GET /api/posts/:page
 function findAllPosts(req, res) {
 
-  const limit = 2;
+  const limit = 10;
 
   var page = parseInt(req.params.page) || 1;
   page = page<1?1:page;
@@ -85,7 +85,7 @@ function findAllPosts(req, res) {
       var post = {
         "_id": data.docs[i]._id,
         "title": data.docs[i].title,
-        "description": data.docs[i].description.substring(0,100),
+        "description": data.docs[i].description.substring(0, 100),
         "author": data.docs[i].author,
         "date_create": data.docs[i].date_create
       };
