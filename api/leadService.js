@@ -9,12 +9,13 @@ function addLead(req, res) {
   //var data = moment.tz(datatime, "America/Sao_Paulo").format();
 
   var newLead = {
+    "_id": req.body.email,
     "name": req.body.name,
     "email": req.body.email,
     "ip": "123",
     "score": 0,
     "date_create": moment.tz(datatime, "America/Sao_Paulo").format(),
-    "time": date.getTime()
+    "time": datatime.getTime()
   };
 
   console.log(newLead);
