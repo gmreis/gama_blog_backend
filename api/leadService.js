@@ -5,6 +5,14 @@ const fs = require('fs');
 // POST /api/leads
 function addLead(req, res) {
 
+  var err = validaLead(req, res);
+
+  if(err.length > 0) {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(400).end(JSON.stringify({err}));
+    return console.log('[posts.insert.validacao] ', err);
+  }
+
   const ip = (req.headers['x-forwarded-for'] ||
      req.connection.remoteAddress ||
      req.socket.remoteAddress ||
@@ -38,6 +46,21 @@ function addLead(req, res) {
     res.status(201).end(JSON.stringify(newLead));
   });
 
+}
+
+function validaLead(req, res) {
+  var err = [];
+  if(!req.body.hasOwnProperty('name') || isEmpty(req.body.name))
+    err.push({name: "Campo Nome não pode ser vazio."});
+
+  if(!req.body.hasOwnProperty('email') || isEmpty(req.body.email))
+    err.push({email: "Campo E-mail não pode ser vazio."});
+
+  return err;
+}
+
+function isEmpty(str) {
+    return (!str || 0 === str.length);
 }
 
 function listLeads(req, res) {
