@@ -62,21 +62,48 @@ function findPostById(req, res) {
 // GET /api/posts/:page
 function findAllPosts(req, res) {
 
-  const limit = 10;
+  const limit = 6;
 
   var page = parseInt(req.params.page) || 1;
   page = page<1?1:page;
 
+  connection.view('viewPost', 'listAll',
+                  {limit: limit, skip: ((page-1)*limit), reduce: false},
+                  function(err, body) {
+    if (err) {
+      res.status(400).end();
+      return console.log('[posts.find] ', err.message);
+    }
+
+    var posts = [];
+    for(var i=0; i<body.rows.length; i++) {
+      var post = {
+        "_id": body.rows[i].key._id,
+        "title": body.rows[i].key.title,
+        "description": body.rows[i].key.description.substring(0, 100),
+        "keys": body.rows[i].key.keys,
+        "author": body.rows[i].key.author,
+        "image": body.rows[i].key.image,
+        "date_create": body.rows[i].key.date_create
+      };
+
+      posts.push(post);
+    }
+    console.log('POSTS:', posts);
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).end(JSON.stringify({total_rows: body.total_rows, rows: posts}));
+  });
+/*
   const query = {
-      "selector": {
-        "time": {
-          "$gte": 0
-        }
-      },
-      "sort": [{ "time": "desc" }],
-      "limit": limit,
-      "skip": ((page-1)*limit)
-    };
+    "selector": {
+      "time": {
+        "$gte": 0
+      }
+    },
+    "sort": [{ "time": "desc" }],
+    "limit": limit,
+    "skip": ((page-1)*limit)
+  };
 
   connection.find(query, function(err, data) {
     if (err) {
@@ -102,8 +129,9 @@ function findAllPosts(req, res) {
 
     res.setHeader('Content-Type', 'application/json');
     res.status(200).end(JSON.stringify(posts));
-  });
 
+  });
+*/
 }
 
 
