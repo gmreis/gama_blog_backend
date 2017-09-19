@@ -2,33 +2,37 @@ const connection = require('./../config/database_leads')
 const moment = require('moment-timezone');
 const fs = require('fs');
 
-// POST /api/Lead
+// POST /api/leads
 function addLead(req, res) {
 
-  const datatime = new Date();
   const ip = (req.headers['x-forwarded-for'] ||
      req.connection.remoteAddress ||
      req.socket.remoteAddress ||
      req.connection.socket.remoteAddress).split(",")[0];
+
+  const datatime = new Date();
+  var data_format = moment.tz(datatime, "America/Sao_Paulo").format();
+  data_format = data_format.substring(0, 19);
+  data_format = data_format.replace('T', ' ');
 
   var newLead = {
     "_id": req.body.email,
     "name": req.body.name,
     "email": req.body.email,
     "ip": ip,
-    "score": 0,
-    "date_create": moment.tz(datatime, "America/Sao_Paulo").format(),
+    "score": 'B2C',
+    "date_create":data_format,
     "time": datatime.getTime()
   };
 
-  console.log(newLead);
-
   connection.insert(newLead, function(err, body, header) {
     if (err) {
-      return console.log('[mydb.insert] ', err.message);
+      res.status(400).end(JSON.stringify({ "err": err.message }));
+      return console.log('[leads.list] ', err.message);
     }
 
     newLead._id = body.id;
+    delete newLead.time;
 
     res.setHeader('Content-Type', 'application/json');
     res.status(201).end(JSON.stringify(newLead));
@@ -37,8 +41,6 @@ function addLead(req, res) {
 }
 
 function listLeads(req, res) {
-
-
 
   const query = {
       "selector": {
@@ -51,7 +53,7 @@ function listLeads(req, res) {
 
   connection.find(query, function(err, data) {
     if (err) {
-      res.status(400).end();
+      res.status(400).end({ "err": err.message });
       return console.log('[leads.list] ', err.message);
     }
 
@@ -106,7 +108,7 @@ function listLeadsCSV(req, res) {
     var leads = [];
     for(var i=0; i<data.docs.length; i++) {
 
-      var line = data.docs[i].name+';'+data.docs[i].ip+';'+data.docs[i].score+';'+data.docs[i].date_create+'\r\n';
+      var line = data.docs[i].email+','+data.docs[i].name+','+data.docs[i].ip+','+data.docs[i].score+','+data.docs[i].date_create+'\r\n';
       writeStream.write(line);
     }
 
