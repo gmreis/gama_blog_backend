@@ -105,22 +105,15 @@ function listLeads(req, res) {
 function listLeadsCSV(req, res) {
 
   const query = {
-      "selector": {
-        "name": {
-          "$gte": 0
-        }
-      },
-      "sort": [{ "name": "asc" }]
-    };
+    "selector": {
+      "name": {
+        "$gte": 0
+      }
+    },
+    "sort": [{ "name": "asc" }]
+  };
 
-    const arq = "Grupo 2 - Group007 - Skyfall.csv";
-    var writeStream = fs.createWriteStream(arq, {flags: 'w', autoClose: false});
 
-    writeStream.on('finish', () => { // Quando fechar o arquivo
-      res.download(arq, () => { //Envia o arquivo para download
-        fs.unlink(arq);  //Após o download, é excluido o arquivo...
-      });
-    });
 
   connection.find(query, function(err, data) {
     if (err) {
@@ -128,14 +121,29 @@ function listLeadsCSV(req, res) {
       return console.log('[leads.list] ', err.message);
     }
 
-    var leads = [];
+    var line = "";
     for(var i=0; i<data.docs.length; i++) {
 
-      var line = data.docs[i].email+','+data.docs[i].name+','+data.docs[i].ip+','+data.docs[i].score+','+data.docs[i].date_create+'\r\n';
-      writeStream.write(line);
+      line += data.docs[i].email+','+data.docs[i].name+','+data.docs[i].ip+','+data.docs[i].score+','+data.docs[i].date_create+'\r\n';
     }
 
-    writeStream.end();
+    const arq = "Grupo 2 - Group007 - Skyfall.csv";
+
+    if(fs.existsSync(arq))
+      fs.unlinkSync(arq);
+
+    fs.writeFileSync(arq, line, 'utf8');
+
+    res.download(arq, () => {
+
+      fs.unlink(arq, (err) => {
+        if(err)
+          console.log("Erro ao excluir...");
+        else
+          console.log("Excluido");
+      });  //Após o download, é excluido o arquivo...
+
+    });
 
   });
 
