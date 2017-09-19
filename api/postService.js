@@ -4,20 +4,31 @@ const moment = require('moment-timezone');
 // POST /api/posts
 function addPost(req, res) {
 
-  //validaPost(req, res);
+  var err = validaPost(req, res);
+
+  if(err.length > 0) {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(400).end(JSON.stringify({err}));
+    return console.log('[posts.insert.validacao] ', err);
+  }
 
   const date = new Date();
   const date_create = moment.tz(date, "America/Sao_Paulo").format();
+
+  var image = '';
+  if(req.body.hasOwnProperty('image'))
+    image = req.body.image;
 
   var newPost = {
     "title": req.body.title,
     "description": req.body.description,
     "keys": req.body.keys,
     "author": req.body.author,
-    "image": req.body.image,
+    "image": image,
     "date_create": date_create,
     "time": date.getTime()
   };
+  console.log(newPost);
 
   connection.insert(newPost, function(err, body, header) {
     if (err) {
@@ -32,6 +43,28 @@ function addPost(req, res) {
     res.status(201).end(JSON.stringify(newPost));
   });
 
+}
+
+function validaPost(req, res) {
+  var err = [];
+  if(!req.body.hasOwnProperty('title') || isEmpty(req.body.title))
+    err.push({title: "Campo Título não pode ser vazio."});
+
+  if(!req.body.hasOwnProperty('description') || isEmpty(req.body.description))
+    err.push({description: "Campo Descrição não pode ser vazio."});
+
+  if(!req.body.hasOwnProperty('keys') || isEmpty(req.body.keys))
+    err.push({keys: "Campo Chaves não pode ser vazio."});
+
+  if(!req.body.hasOwnProperty('author') || isEmpty(req.body.author))
+    err.push({author: "Campo Autor não pode ser vazio."});
+
+  return err;
+
+}
+
+function isEmpty(str) {
+    return (!str || 0 === str.length);
 }
 
 // GET /api/posts/find/:id
