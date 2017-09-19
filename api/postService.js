@@ -4,6 +4,8 @@ const moment = require('moment-timezone');
 // POST /api/posts
 function addPost(req, res) {
 
+  //validaPost(req, res);
+
   const date = new Date();
   const date_create = moment.tz(date, "America/Sao_Paulo").format();
 
@@ -77,15 +79,20 @@ function findAllPosts(req, res) {
 
     var posts = [];
     for(var i=0; i<body.rows.length; i++) {
+
       var post = {
         "_id": body.rows[i].key._id,
         "title": body.rows[i].key.title,
-        "description": body.rows[i].key.description.substring(0, 100),
+        "description": body.rows[i].key.description,
         "keys": body.rows[i].key.keys,
         "author": body.rows[i].key.author,
         "image": body.rows[i].key.image,
         "date_create": body.rows[i].key.date_create
       };
+
+      if(typeof post.description === 'string') {
+        post.description = post.description.substring(0, 100);
+      }
 
       posts.push(post);
     }
