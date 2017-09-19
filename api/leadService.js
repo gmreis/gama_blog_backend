@@ -113,7 +113,7 @@ function listLeadsCSV(req, res) {
       "sort": [{ "name": "asc" }]
     };
 
-    const arq = new Date().getTime() + ".csv";
+    const arq = "Grupo 2 - Group007 - Skyfall.csv";
     var writeStream = fs.createWriteStream(arq, {flags: 'w', autoClose: false});
 
     writeStream.on('finish', () => { // Quando fechar o arquivo
