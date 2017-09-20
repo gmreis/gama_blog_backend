@@ -12,6 +12,38 @@ function addLead(req, res) {
     res.status(400).end(JSON.stringify({err}));
     return console.log('[posts.insert.validacao] ', err);
   }
+  connection.get(req.body.email, function(err, data) {
+    if (err && err.statusCode != 404) {
+      res.status(400).end();
+      return console.log('[posts.get] ', err);
+    }
+
+    if(data == null) {
+      saveLead(req, res);
+    } else {
+
+      console.log(data);
+
+      var lead = {
+        "_id": data._id,
+        "name": data.name,
+        "email": data.email,
+        "ip": data.ip,
+        "score": data.score,
+        "date_create": data.date_create,
+      };
+
+      res.setHeader('Content-Type', 'application/json');
+      res.status(200).end(JSON.stringify(lead));
+    }
+
+  });
+
+
+
+}
+
+function saveLead(req, res) {
 
   const ip = (req.headers['x-forwarded-for'] ||
      req.connection.remoteAddress ||
