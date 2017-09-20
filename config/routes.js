@@ -32,27 +32,14 @@ module.exports = function(server) {
   // POST /api/users
   router.route('/users').post(userService.addUser)
 
-  // POST /api/users/login
-  router.route('/users/login').post(userService.login)
+  // POST /api/users/authenticate
+  router.route('/users/authenticate').post(userService.authenticate)
 
   const postService = require('../api/postService')
 
   // POST /api/posts
   router.route('/posts').post(postService.addPost)
 
-  // POST /api/posts/addImage
-  router.route('/posts/addImage').post(postService.addImage)
-  router.route('/posts/addImage').get(function (req, res){
-    res.end(
-      "<html>"
-        +"<body>"
-          +"<form action='/api/posts/addImage' method='post' enctype='multipart/form-data'>"
-            +"<input name='image' type='file'/>"
-            +"<input type='submit'>"
-          +"</form>"
-        +"</body>"
-      +"</html>");
-  })
 
   // GET /api/posts/find/:id
   router.route('/posts/find/:id').get(postService.findPostById)

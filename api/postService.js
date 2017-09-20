@@ -3,7 +3,20 @@ const moment = require('moment-timezone');
 
 // POST /api/posts
 function addPost(req, res) {
-
+/*
+  // check header or url parameters or post parameters for token
+  var token = req.headers['x-access-token'];
+  try {
+    var decoded = jwt.verify(token, 'bqnepc123');
+    if(!decoded || !decoded.hasOwnProperty('login')){
+      throw 'Falha na autenticação do Token';
+    }
+  } catch(err) {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(400).end(JSON.stringify({ success: false, message: 'Falha na autenticação do Token' }));
+    return console.log('[Post.Add]', err);
+  }
+*/
   var err = validaPost(req, res);
 
   if(err.length > 0) {
@@ -28,7 +41,7 @@ function addPost(req, res) {
     "date_create": date_create,
     "time": date.getTime()
   };
-  console.log(newPost);
+  //console.log(newPost);
 
   connection.insert(newPost, function(err, body, header) {
     if (err) {
@@ -129,156 +142,11 @@ function findAllPosts(req, res) {
 
       posts.push(post);
     }
-    console.log('POSTS:', posts);
+    //console.log('POSTS:', posts);
     res.setHeader('Content-Type', 'application/json');
     res.status(200).end(JSON.stringify({total_rows: body.total_rows, rows: posts}));
   });
-/*
-  const query = {
-    "selector": {
-      "time": {
-        "$gte": 0
-      }
-    },
-    "sort": [{ "time": "desc" }],
-    "limit": limit,
-    "skip": ((page-1)*limit)
-  };
 
-  connection.find(query, function(err, data) {
-    if (err) {
-      res.status(400).end();
-      return console.log('[posts.find] ', err.message);
-    }
-
-    var posts = [];
-    for(var i=0; i<data.docs.length; i++) {
-      var post = {
-        "_id": data.docs[i]._id,
-        "title": data.docs[i].title,
-        "description": data.docs[i].description.substring(0, 100),
-        "keys": data.docs[i].keys,
-        "author": data.docs[i].author,
-        "image": data.docs[i].image,
-        "date_create": data.docs[i].date_create,
-        "time": data.docs[i].time
-      };
-
-      posts.push(post);
-    }
-
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).end(JSON.stringify(posts));
-
-  });
-*/
 }
 
-
-
-var fs = require('fs');
-
-// function to encode file data to base64 encoded string
-function base64_encode(file) {
-    // read binary data
-    var bitmap = fs.readFileSync(file);
-    // convert binary data to base64 encoded string
-    return new Buffer(bitmap).toString('base64');
-}
-
-// function to create file from base64 encoded string
-function base64_decode(base64str, file) {
-    // create buffer object from base64 encoded string, it is important to tell the constructor that the string is base64 encoded
-    var bitmap = new Buffer(base64str, 'base64');
-    // write buffer to file
-    fs.writeFileSync(file, bitmap);
-    console.log('******** File created from base64 encoded string ********');
-}
-
-
-function addImage(req, res) {
-
-  var formidable = require('formidable')
-  , http = require('http');
-
-  var form = new formidable.IncomingForm();
-
-  form.parse(req, function(err, fields, files) {
-    res.writeHead(200, {'content-type': 'text/plain'});
-    res.write('received upload:\n\n');
-    var image = files.image
-      , image_upload_path_old = image.path
-      , image_upload_path_new = './upload/'
-      , image_upload_name = image.name
-      , image_upload_path_name = image_upload_path_new + image_upload_name;
-
-    if (fs.existsSync(image_upload_path_new)) {
-
-
-      // convert image to base64 encoded string
-      var base64str = base64_encode(image_upload_path_old);
-      console.log(base64str);
-      // convert base64 string back to image
-      base64_decode(base64str, image_upload_path_name);
-
-      /*
-      fs.rename(
-        image_upload_path_old,
-        image_upload_path_name,
-        function (err) {
-          if (err) {
-            console.log('Err: ', err);
-            res.end('Deu merda na hora de mover a imagem!');
-          }
-          var msg = 'Imagem ' + image_upload_name + ' salva em: ' + image_upload_path_new;
-          console.log(msg);
-          res.end(msg);
-        });
-        */
-    } else {
-      fs.mkdir(image_upload_path_new, function (err) {
-        if (err) {
-          console.log('Err: ', err);
-          res.end('Deu merda na hora de criar o diretório!');
-        }
-/*
-        fs.rename(
-          image_upload_path_old,
-          image_upload_path_name,
-          function(err) {
-            var msg = 'Imagem ' + image_upload_name + ' salva em: ' + image_upload_path_new;
-            console.log(msg);
-            res.end(msg);
-          });
-          */
-      });
-    }
-  });
-
-
-
-
-  const id = "d0b265f12f3f7c14926c721354fdb499";
-
-  //console.log(req);
-
-  //res.status(201).end(JSON.stringify("OK"));
-
-/*
-  connection.insert(newPost, function(err, body, header) {
-    if (err) {
-      res.status(400).end();
-      return console.log('[posts.insert] ', err.message);
-    }
-
-    newPost._id = body.id;
-    delete newPost.time;
-
-    res.setHeader('Content-Type', 'application/json');
-    res.status(201).end(JSON.stringify(newPost));
-  });
-*/
-}
-
-
-module.exports = { addPost, findPostById, findAllPosts, addImage }
+module.exports = { addPost, findPostById, findAllPosts }
