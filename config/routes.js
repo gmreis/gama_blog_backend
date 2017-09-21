@@ -40,6 +40,11 @@ module.exports = function(server) {
   // POST /api/posts
   router.route('/posts').post(postService.addPost)
 
+  // PUT /api/posts
+  router.route('/posts').put(postService.editPost)
+
+  // DELETE /api/posts
+  router.route('/posts').delete(postService.deletePost)
 
   // GET /api/posts/find/:id
   router.route('/posts/find/:id').get(postService.findPostById)

@@ -1,11 +1,12 @@
 const connection = require('./../config/database_posts')
 const moment = require('moment-timezone');
+const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
-// POST /api/posts
-function addPost(req, res) {
-/*
+function verifyUser(req, res) {
+
   // check header or url parameters or post parameters for token
   var token = req.headers['x-access-token'];
+
   try {
     var decoded = jwt.verify(token, 'bqnepc123');
     if(!decoded || !decoded.hasOwnProperty('login')){
@@ -14,10 +15,19 @@ function addPost(req, res) {
   } catch(err) {
     res.setHeader('Content-Type', 'application/json');
     res.status(400).end(JSON.stringify({ success: false, message: 'Falha na autenticação do Token' }));
-    return console.log('[Post.Add]', err);
+    return false;
   }
-*/
-  var err = validaPost(req, res);
+
+  return true;
+}
+
+// POST /api/posts
+function addPost(req, res) {
+
+  if(!verifyUser(req, res))
+    return false;
+
+  var err = validaPost(req, false);
 
   if(err.length > 0) {
     res.setHeader('Content-Type', 'application/json');
@@ -50,7 +60,10 @@ function addPost(req, res) {
     }
 
     newPost._id = body.id;
+    newPost._rev = body.rev,
     delete newPost.time;
+
+    console.log('[posts.insert] ', newPost);
 
     res.setHeader('Content-Type', 'application/json');
     res.status(201).end(JSON.stringify(newPost));
@@ -58,7 +71,76 @@ function addPost(req, res) {
 
 }
 
-function validaPost(req, res) {
+// PUT /api/posts
+function editPost(req, res) {
+
+  if(!verifyUser(req, res))
+    return false;
+
+  var err = validaPost(req, true);
+
+  if(err.length > 0) {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(400).end(JSON.stringify({err}));
+    return console.log('[posts.edit.validacao] ', err);
+  }
+
+  var post = {
+    "_id": req.body._id,
+    "_rev": req.body._rev,
+    "title": req.body.title,
+    "description": req.body.description,
+    "keys": req.body.keys,
+    "author": req.body.author,
+    "image": req.body.image
+  };
+
+  connection.insert(post, function(err, body, header) {
+    if (err) {
+      res.status(400).end({ success: false, message: err.message });
+      return console.log('[posts.insert] ', err.message);
+    }
+
+    console.log('posts.edit', body);
+    post._rev = body.rev;
+
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).end(JSON.stringify(post));
+  });
+
+}
+
+// DELETE /api/posts
+function deletePost(req, res) {
+
+  if(!verifyUser(req, res))
+    return false;
+
+  try {
+    if(!req.body.hasOwnProperty('_id') || isEmpty(req.body._id))
+      throw 'Campo ID não pode ser vazio';
+
+    if(!req.body.hasOwnProperty('_rev') || isEmpty(req.body._rev))
+      throw 'Campo REV não pode ser vazio';
+  } catch(err) {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(400).end(JSON.stringify({ success: false, message: err }));
+    return false;
+  }
+
+  connection.destroy(req.body._id, req.body._rev, function(err, data) {
+    if (err) {
+      res.status(400).end({ success: false, message: err.message });
+      return console.log('[posts.insert] ', err.message);
+    }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).end(JSON.stringify(data));
+  });
+
+}
+
+function validaPost(req, oldPost) {
   var err = [];
   if(!req.body.hasOwnProperty('title') || isEmpty(req.body.title))
     err.push({title: "Campo Título não pode ser vazio."});
@@ -71,6 +153,14 @@ function validaPost(req, res) {
 
   if(!req.body.hasOwnProperty('author') || isEmpty(req.body.author))
     err.push({author: "Campo Autor não pode ser vazio."});
+
+  if(oldPost) {
+    if(!req.body.hasOwnProperty('_id') || isEmpty(req.body._id))
+      err.push({author: "Campo ID não pode ser vazio."});
+
+    if(!req.body.hasOwnProperty('_rev') || isEmpty(req.body._rev))
+      err.push({author: "Campo REV não pode ser vazio."});
+  }
 
   return err;
 
@@ -90,8 +180,11 @@ function findPostById(req, res) {
       return console.log('[posts.get] ', err.message);
     }
 
+    console.log(data);
+
     var post = {
       "_id": data._id,
+      "_rev": data._rev,
       "title": data.title,
       "description": data.description,
       "keys": data.keys,
@@ -101,7 +194,7 @@ function findPostById(req, res) {
     };
 
     res.setHeader('Content-Type', 'application/json');
-    res.status(201).end(JSON.stringify(post));
+    res.status(200).end(JSON.stringify(post));
   });
 
 }
@@ -149,4 +242,4 @@ function findAllPosts(req, res) {
 
 }
 
-module.exports = { addPost, findPostById, findAllPosts }
+module.exports = { addPost, editPost, deletePost, findPostById, findAllPosts }
