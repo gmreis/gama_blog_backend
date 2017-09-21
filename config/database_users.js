@@ -26,16 +26,17 @@ if (appEnv.services['cloudantNoSQLDB']) {
   cloudant.db.create(dbName, function(err, data) {
     if(!err) //err if database doesn't already exists
       console.log("Created database: " + dbName);
+
+    var index_login = {name:'login-index', type:'json', index:{fields:['login']}}
+    cloudant.db.use(dbName).index(index_login, function(er, response) {
+      if (!er)
+        console.log('Index %s creation result: %s', index_login.name, response.result);
+    });
   });
 
   // Specify the database we are going to use (connection)...
   connection = cloudant.db.use(dbName);
 
-  var index_login = {name:'login-index', type:'json', index:{fields:['login']}}
-  connection.index(index_login, function(er, response) {
-    if (!er)
-      console.log('Index %s creation result: %s', index_login.name, response.result);
-  });
 }
 
 module.exports = connection
