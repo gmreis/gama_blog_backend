@@ -2,6 +2,6 @@
 applications:
  - name: skyfall-blog-dev
    random-route: true
-   instances: 2
-   memory: 256M
+   instances: 8
+   memory: 128M
    host: skyfall-blog-dev
